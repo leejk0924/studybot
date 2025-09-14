@@ -1,3 +1,51 @@
 spring:
+  config:
+    activate:
+      on-profile: local
   application:
     name: studybot
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:studybot;MODE=MySQL
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: none   # 운영시 none, 테스트는 update/create도 가능
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: false
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+---
+spring:
+  config:
+    activate:
+      on-profile: proc
+  datasource:
+    url: jdbc:mysql://localhost:3306/bot
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: application
+    password: application
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 10
+      max-lifetime: 1800000
+      connection-timeout: 10000
+      idle-timeout: 600000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+  devtools:
+    add-properties: false
