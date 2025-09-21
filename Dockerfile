@@ -31,6 +31,7 @@ EXPOSE 8080
 
 # Set environment variables for runtime
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
+ENV TZ=Asia/Seoul
 
 # Run the application
-CMD ["sh", "-c", "java $JAVA_OPTS -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -jar app.jar"]
+CMD ["sh", "-c", "java $JAVA_OPTS -Duser.timezone=Asia/Seoul -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -jar app.jar"]

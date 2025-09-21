@@ -38,7 +38,7 @@ spring:
     activate:
       on-profile: proc
   datasource:
-    url: jdbc:mysql://studybot-mysql:3306/${DB_NAME:bot}?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://studybot-mysql:3306/${DB_NAME:bot}?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME:application}
     password: ${DB_PASSWORD:application}
