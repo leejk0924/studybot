@@ -2,6 +2,7 @@ package org.jk.studybot.repository;
 
 import org.jk.studybot.entity.VoiceChannelLog;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
@@ -25,9 +26,13 @@ public interface VoiceChannelLogRepository extends JpaRepository<VoiceChannelLog
     @Query("SELECT log FROM VoiceChannelLog log WHERE log.recordedAt >= :startOfWeek AND log.recordedAt < :endOfWeek")
     List<VoiceChannelLog> findByWeek(LocalDateTime startOfWeek, LocalDateTime endOfWeek);
 
-    @Query("SELECT log FROM VoiceChannelLog log WHERE log.userName = :userName AND DATE(log.recordedAt) = CURRENT_DATE AND log.isCurrentlyStudying = true")
-    VoiceChannelLog findActiveSessionByUserName(String userName);
+    @Query("SELECT log FROM VoiceChannelLog log WHERE log.userName = :userName AND log.isCurrentlyStudying = true AND log.currentSessionStart >= :todayStart")
+    VoiceChannelLog findActiveSessionByUserName(String userName, LocalDateTime todayStart);
 
     @Query("SELECT log FROM VoiceChannelLog log WHERE log.isCurrentlyStudying = true")
     List<VoiceChannelLog> findAllActiveSessions();
+
+    @Modifying
+    @Query("UPDATE VoiceChannelLog log SET log.isCurrentlyStudying = false WHERE log.isCurrentlyStudying = true")
+    int closeAllActiveSessions();
 }

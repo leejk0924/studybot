@@ -38,9 +38,10 @@ public class VoiceChannelTracker extends ListenerAdapter {
         TextChannel textChannel = textChannels != null && !textChannels.isEmpty() ? textChannels.get(0) : null;
 
         if (joinedChannel != null && joinedChannel.getName().equals(targetVoiceChannelName)) {
-            VoiceChannelLog activeSession = repository.findActiveSessionByUserName(user.getName());
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime todayStart = now.toLocalDate().atStartOfDay();
+            VoiceChannelLog activeSession = repository.findActiveSessionByUserName(user.getName(), todayStart);
             if (activeSession == null) {
-                LocalDateTime now = LocalDateTime.now();
 
                 VoiceChannelLog todayLog = repository.findTodayLogByUserName(user.getName());
                 if (todayLog == null) {
@@ -65,9 +66,10 @@ public class VoiceChannelTracker extends ListenerAdapter {
             }
         }
         if (leftChannel != null && leftChannel.getName().equals(targetVoiceChannelName)) {
-            VoiceChannelLog activeSession = repository.findActiveSessionByUserName(user.getName());
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime todayStart = now.toLocalDate().atStartOfDay();
+            VoiceChannelLog activeSession = repository.findActiveSessionByUserName(user.getName(), todayStart);
             if (activeSession != null) {
-                LocalDateTime now = LocalDateTime.now();
                 activeSession.endStudySession(now);
                 repository.save(activeSession);
 
