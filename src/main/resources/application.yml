@@ -51,5 +51,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+    show-sql: false
   devtools:
     add-properties: false

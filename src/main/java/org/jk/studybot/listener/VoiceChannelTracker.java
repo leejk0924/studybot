@@ -64,7 +64,7 @@ public class VoiceChannelTracker extends ListenerAdapter {
                 }
             }
         }
-        if (leftChannel != null && joinedChannel == null) {
+        if (leftChannel != null && leftChannel.getName().equals(targetVoiceChannelName)) {
             VoiceChannelLog activeSession = repository.findActiveSessionByUserName(user.getName());
             if (activeSession != null) {
                 LocalDateTime now = LocalDateTime.now();

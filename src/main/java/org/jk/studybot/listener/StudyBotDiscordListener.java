@@ -41,17 +41,25 @@ public class StudyBotDiscordListener extends ListenerAdapter {
         if (content.startsWith("!!")) {
             String cmd = content.substring(2).trim();
             if (cmd.equals("명령어")) {
-                message.delete().queueAfter(15, TimeUnit.SECONDS);
+                message.delete().queueAfter(15, TimeUnit.SECONDS,
+                    success -> {},
+                    error -> log.warn("Failed to delete message: {}", error.getMessage()));
                 textChannel.sendMessage("명령어를 선택하고나 취소할 수 있습니다.")
                         .addActionRow(commandHandler.getAllCommandsDropdown())
                         .addActionRow(Button.danger("cancel_menu", "취소"))
-                        .queue(m -> m.delete().queueAfter(50, TimeUnit.SECONDS));
+                        .queue(m -> m.delete().queueAfter(50, TimeUnit.SECONDS,
+                            success -> {},
+                            error -> log.warn("Failed to delete message: {}", error.getMessage())));
                 return;
             }
             var returnMessage = commandHandler.handle(cmd, userName, user.getName());
-            message.delete().queueAfter(5, TimeUnit.SECONDS);
+            message.delete().queueAfter(5, TimeUnit.SECONDS,
+                success -> {},
+                error -> log.warn("Failed to delete message: {}", error.getMessage()));
             textChannel.sendMessage(returnMessage).queue(m -> {
-                m.delete().queueAfter(5, TimeUnit.SECONDS);
+                m.delete().queueAfter(5, TimeUnit.SECONDS,
+                    success -> {},
+                    error -> log.warn("Failed to delete message: {}", error.getMessage()));
             });
         }
     }
@@ -67,7 +75,9 @@ public class StudyBotDiscordListener extends ListenerAdapter {
             event.reply(returnMessage).queue(hook -> {
                 hook.deleteOriginal().queueAfter(20, TimeUnit.SECONDS);
             });
-            event.getMessage().delete().queue();
+            event.getMessage().delete().queue(
+                success -> {},
+                error -> log.warn("Failed to delete message: {}", error.getMessage()));
         }
     }
 
