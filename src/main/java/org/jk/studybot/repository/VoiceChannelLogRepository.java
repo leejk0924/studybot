@@ -26,8 +26,8 @@ public interface VoiceChannelLogRepository extends JpaRepository<VoiceChannelLog
     @Query("SELECT log FROM VoiceChannelLog log WHERE log.recordedAt >= :startOfWeek AND log.recordedAt < :endOfWeek")
     List<VoiceChannelLog> findByWeek(LocalDateTime startOfWeek, LocalDateTime endOfWeek);
 
-    @Query("SELECT log FROM VoiceChannelLog log WHERE log.userName = :userName AND log.isCurrentlyStudying = true AND log.currentSessionStart >= :todayStart")
-    VoiceChannelLog findActiveSessionByUserName(String userName, LocalDateTime todayStart);
+    @Query("SELECT log FROM VoiceChannelLog log WHERE log.userName = :userName AND log.isCurrentlyStudying = true")
+    VoiceChannelLog findActiveSessionByUserName(String userName);
 
     @Query("SELECT log FROM VoiceChannelLog log WHERE log.isCurrentlyStudying = true")
     List<VoiceChannelLog> findAllActiveSessions();

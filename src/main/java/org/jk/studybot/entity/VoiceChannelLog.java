@@ -68,7 +68,6 @@ public class VoiceChannelLog {
             long sessionDuration = java.time.Duration.between(currentSessionStart, sessionEnd).getSeconds();
             this.duration += sessionDuration;
             this.isCurrentlyStudying = false;
-            this.currentSessionStart = null;
             this.recordedAt = sessionEnd;
         }
     }
