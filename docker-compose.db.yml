@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: studybot-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-bot}
+      MYSQL_USER: ${DB_USERNAME:-application}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-application}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - ./data/db:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: unless-stopped
+    networks:
+      - studybot-network
+
+networks:
+  studybot-network:
+    external: true

@@ -19,9 +19,9 @@ discord:
   bot:
     token:
 voice-channel:
-  target-channel-name: study
+  target-channel-name: ${VOICE_CHANNEL_NAME:study}
 text-channel:
-  target-channel-name: study-time
+  target-channel-name: ${TEXT_CHANNEL_NAME:study-time}
 ---
 spring:
   config:
@@ -38,10 +38,10 @@ spring:
     activate:
       on-profile: proc
   datasource:
-    url: jdbc:mysql://localhost:3306/bot
+    url: jdbc:mysql://studybot-mysql:3306/${DB_NAME:bot}?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: application
-    password: application
+    username: ${DB_USERNAME:application}
+    password: ${DB_PASSWORD:application}
     hikari:
       maximum-pool-size: 5
       minimum-idle: 10

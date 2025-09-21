@@ -1,19 +1,23 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
+  studybot:
+    build: .
+    container_name: studybot-app
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=bot
-      - MYSQL_USER=application
-      - MYSQL_PASSWORD=application
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./data/db:/var/lib/mysql
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - DB_NAME=${DB_NAME:-bot}
+      - DB_USERNAME=${DB_USERNAME:-application}
+      - DB_PASSWORD=${DB_PASSWORD:-application}
+      - VOICE_CHANNEL_NAME=${VOICE_CHANNEL_NAME:-study}
+      - TEXT_CHANNEL_NAME=${TEXT_CHANNEL_NAME:-study-time}
     restart: unless-stopped
+    volumes:
+      - ./logs/app:/app/logs
+    networks:
+      - studybot-network
 
-volumes:
-  mysql_data:
+networks:
+  studybot-network:
+    external: true
