@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -32,6 +33,10 @@ public class StudyBotDiscordListener extends ListenerAdapter {
         }
 
         if (!event.getChannel().getType().isMessage()) {
+            return;
+        }
+
+        if (event.getChannel().getType().isThread()) {
             return;
         }
 
@@ -72,12 +77,25 @@ public class StudyBotDiscordListener extends ListenerAdapter {
             var selected = event.getValues().get(0);
             var returnMessage = commandHandler.handle(selected, userName, event.getUser().getName());
 
-            event.reply(returnMessage).queue(hook -> {
-                hook.deleteOriginal().queueAfter(20, TimeUnit.SECONDS);
+            event.reply(returnMessage).setEphemeral(true).queue(hook -> {
+                hook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS);
             });
-            event.getMessage().delete().queue(
-                success -> {},
-                error -> log.warn("Failed to delete message: {}", error.getMessage()));
+
+            if (!event.getMessage().getFlags().contains(Message.MessageFlag.EPHEMERAL)) {
+                event.getMessage().delete().queue(
+                    success -> {},
+                    error -> log.warn("Failed to delete message: {}", error.getMessage()));
+            }
+        }
+    }
+    @Override
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        if (event.getName().equals("명령어")) {
+            event.reply("명령어를 선택하거나 취소할 수 있습니다.")
+                    .addActionRow(commandHandler.getAllCommandsDropdown())
+                    .addActionRow(Button.danger("cancel_menu", "취소"))
+                    .setEphemeral(true)
+                    .queue();
         }
     }
 
@@ -85,7 +103,9 @@ public class StudyBotDiscordListener extends ListenerAdapter {
     public void onButtonInteraction(ButtonInteractionEvent event) {
         if (event.getComponentId().equals("cancel_menu")) {
             event.reply("명령어 선택이 취소되었습니다.").setEphemeral(true).queue();
-            event.getMessage().delete().queue();
+            event.getMessage().delete().queue(
+                success -> {},
+                error -> log.warn("Failed to delete message: {}", error.getMessage()));
         }
     }
 }
