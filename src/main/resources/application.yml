@@ -54,3 +54,8 @@ spring:
     show-sql: false
   devtools:
     add-properties: false
+
+logging:
+  level:
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
