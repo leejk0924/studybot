@@ -13,7 +13,7 @@ public interface VoiceChannelLogRepository extends JpaRepository<VoiceChannelLog
     @Query("SELECT log FROM VoiceChannelLog log WHERE log.recordedAt >= :start AND log.recordedAt < :end")
     List<VoiceChannelLog> findAllLogsBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT log FROM VoiceChannelLog log WHERE log.userName = :userName AND DATE(log.recordedAt) = CURRENT_DATE")
+    @Query(value = "SELECT * FROM voice_channel_logs WHERE user_name = :userName AND DATE(recorded_at) = CURRENT_DATE ORDER BY recorded_at DESC LIMIT 1", nativeQuery = true)
     VoiceChannelLog findTodayLogByUserName(String userName);
 
     List<VoiceChannelLog> findByUserName(String userName);
