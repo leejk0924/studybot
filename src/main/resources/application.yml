@@ -18,6 +18,8 @@ logging:
 discord:
   bot:
     token:
+  guild:
+    id: ${DISCORD_GUILD_ID}
 voice-channel:
   target-channel-name: ${VOICE_CHANNEL_NAME:study}
 text-channel:

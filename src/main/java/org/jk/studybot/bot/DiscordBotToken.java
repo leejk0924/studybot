@@ -9,4 +9,7 @@ import org.springframework.stereotype.Component;
 public class DiscordBotToken {
     @Value("${discord.bot.token}")
     private String token;
+
+    @Value("${discord.guild.id}")
+    private String guildId;
 }
