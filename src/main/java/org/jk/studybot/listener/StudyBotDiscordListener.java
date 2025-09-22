@@ -2,9 +2,11 @@ package org.jk.studybot.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -12,6 +14,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jk.studybot.command.CommandHandler;
+import org.jk.studybot.dto.team.CreateTeamDTO;
+import org.jk.studybot.service.TeamService;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -20,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class StudyBotDiscordListener extends ListenerAdapter {
+    private final TeamService teamService;
     private final CommandHandler commandHandler;
 
     @Override
@@ -49,7 +54,7 @@ public class StudyBotDiscordListener extends ListenerAdapter {
                 message.delete().queueAfter(15, TimeUnit.SECONDS,
                     success -> {},
                     error -> log.warn("Failed to delete message: {}", error.getMessage()));
-                textChannel.sendMessage("명령어를 선택하고나 취소할 수 있습니다.")
+                textChannel.sendMessage("명령어를 선택하거나 취소할 수 있습니다.")
                         .addActionRow(commandHandler.getAllCommandsDropdown())
                         .addActionRow(Button.danger("cancel_menu", "취소"))
                         .queue(m -> m.delete().queueAfter(50, TimeUnit.SECONDS,
@@ -88,6 +93,31 @@ public class StudyBotDiscordListener extends ListenerAdapter {
             }
         }
     }
+
+    @Override
+    public void onModalInteraction(ModalInteractionEvent event) {
+        if (event.getModalId().equals("team_create_modal")) {
+            var teamName = event.getValue("team_name").getAsString().trim();
+            createVoiceChannel(teamName, event);
+        }
+    }
+
+    private void createVoiceChannel(String teamName, ModalInteractionEvent event) {
+        String teamCategoryName = teamName;
+        var channelName = teamName + " 공부방";
+
+        Guild guild = event.getGuild();
+        guild.createCategory(teamCategoryName).queue(category -> {
+            category.createVoiceChannel(channelName)
+                    .queue(vc -> {
+                        String voiceChannelId = vc.getId();
+                        var dto = new CreateTeamDTO(teamName, voiceChannelId, channelName);
+                        teamService.createTeam(dto);
+                        event.reply("✅ `" + teamCategoryName + "` 카테고리와 `" + vc.getName() + "` 채널이 생성되었습니다!").queue();
+                    }, error -> event.reply("⚠️ 음성채널 생성 실패").queue());
+        });
+    }
+
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (event.getName().equals("명령어")) {

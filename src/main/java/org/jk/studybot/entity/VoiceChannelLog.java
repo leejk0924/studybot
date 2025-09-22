@@ -31,6 +31,7 @@ public class VoiceChannelLog {
     @Column(name = "duration")
     private Long duration;
 
+    @Getter
     @Column(name = "recorded_at")
     private LocalDateTime recordedAt;
 
@@ -79,4 +80,7 @@ public class VoiceChannelLog {
         return 0;
     }
 
+    public long getTotalDurationWithCurrent() {
+        return duration + getCurrentSessionDuration();
+    }
 }

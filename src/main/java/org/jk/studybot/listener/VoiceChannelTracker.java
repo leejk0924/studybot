@@ -41,9 +41,9 @@ public class VoiceChannelTracker extends ListenerAdapter {
             LocalDateTime now = LocalDateTime.now();
             VoiceChannelLog activeSession = repository.findActiveSessionByUserName(user.getName());
             if (activeSession == null) {
-
                 VoiceChannelLog todayLog = repository.findTodayLogByUserName(user.getName());
-                if (todayLog == null) {
+
+                if (todayLog == null || !todayLog.getRecordedAt().toLocalDate().equals(now.toLocalDate())) {
                     todayLog = new VoiceChannelLog(
                             userId,
                             nickName,
